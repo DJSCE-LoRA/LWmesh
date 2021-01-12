@@ -3,11 +3,11 @@ Copyright 2020 Samuel Ramrajkar
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+   You may obtain a copy of the License at*/
 
-       http://www.apache.org/licenses/LICENSE-2.0
+       //http://www.apache.org/licenses/LICENSE-2.0
 
-   Unless required by applicable law or agreed to in writing, software
+   /*Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
@@ -19,37 +19,41 @@ Copyright 2020 Samuel Ramrajkar
 #include "phy.h"
 
 uint8_t DATAEE_ReadByte_Platform(uint16_t addr){
-    uint8_t copy1, copy2, copy3;
+    int retvarcopy;
+    uint8_t copy1;
+    uint8_t copy2;
+    uint8_t copy3;
     copy1 = DATAEE_ReadByte(addr);
     copy2 = DATAEE_ReadByte(addr + EEPROMback1);
     copy3 = DATAEE_ReadByte(addr + EEPROMback2);
     
     //Start voting logic
     if((copy1 == copy2) && (copy2 == copy3)){
-        return copy1;
+        retvarcopy = copy1;
     }
     else if((copy1 == copy2) && (copy2 != copy3)){
         //Fix copy3
         DATAEE_WriteByte(addr + EEPROMback2, copy1);
-        return copy1;
+        retvarcopy = copy1;
     }
     else if((copy1 != copy2) && (copy2 == copy3)){
         //Fix copy1
         DATAEE_WriteByte(addr , copy2);
-        return copy2;
+        retvarcopy = copy2;
     }
     else if((copy1 == copy3) && (copy2 != copy3)){
         //Fix copy2
         DATAEE_WriteByte(addr + EEPROMback1, copy1);
-        return copy1;
+        retvarcopy = copy1;
     }
     else{
         //All three are unequal. Assume copy1 is best
         //Fix copy2 and copy3
         DATAEE_WriteByte(addr + EEPROMback1, copy1);
         DATAEE_WriteByte(addr + EEPROMback2, copy1);
+        retvarcopy = copy1;
     }
-    return copy1;
+    return retvarcopy;
 }
 
 void DATAEE_WriteByte_Platform(uint16_t addr, uint8_t data){
@@ -61,73 +65,208 @@ void DATAEE_WriteByte_Platform(uint16_t addr, uint8_t data){
 
 void sync_eeprom(void){
     if(!eeprom_write_flags.flag_master){
-        return;
+        break;
     }
-    //Atleast one flag is set to sink data back to EEPROM
-    if(eeprom_write_flags.flag_bootload){
+    //At least one flag is set to sink data back to EEPROM
+    bool bootloadbool;
+    int bootloadint = (int)eeprom_write_flags.flag_bootload;
+    if (bootloadint == 0){
+        bootloadbool = false;
+    }
+    else{
+        bootloadbool = true;
+    }
+    bool appkeybool;
+        int appkeyint = (int)eeprom_write_flags.flag_appkey;
+        if (appkeyint == 0){
+            appkeybool = false;
+            }
+        else{
+            appkeybool = true;
+            }
+        
+    bool netkeybool;
+        int netkeyint = (int)eeprom_write_flags.flag_netkey;
+        if (netkeyint == 0){
+            netkeybool = false;
+            }
+        else{
+            netkeybool = true;
+            }
+        
+    bool netidbool;
+        int netidint = (int)eeprom_write_flags.flag_netid;
+        if (netidint == 0){
+            netidbool = false;
+            }
+        else{
+            netidbool = true;
+            }
+    
+    bool sinkbool;
+        int sinkint = (int)eeprom_write_flags.flag_sink;
+        if (sinkint == 0){
+            sinkbool = false;
+            }
+        else{
+            sinkbool = true;
+            }
+        
+    bool radiochbool;
+        int radiochint = (int)eeprom_write_flags.flag_radio_ch;
+        if (radiochint == 0){
+            radiochbool = false;
+            }
+        else{
+            radiochbool = true;
+            }
+        
+    bool txpowerbool;
+        int txpowerint = (int)eeprom_write_flags.flag_tx_power;
+        if (txpowerint == 0){
+            txpowerbool = false;
+            }
+        else{
+            txpowerbool = true;
+            }
+        
+    bool rssibool;
+        int rssiint = (int)eeprom_write_flags.flag_rssi;
+        if (rssiint == 0){
+            rssibool = false;
+            }
+        else{
+            rssibool = true;
+            }
+        
+    bool uartbaudbool;
+        int uartbaudint = (int)eeprom_write_flags.flag_uart_baud;
+        if (uartbaudint == 0){
+            uartbaudbool = false;
+            }
+        else{
+            uartbaudbool = true;
+            }
+        
+    bool uartparbool;
+        int uartparint = (int)eeprom_write_flags.flag_uart_parity;
+        if (uartparint == 0){
+            uartparbool = false;
+            }
+        else{
+            uartparbool = true;
+            }
+        
+    bool sfbool;
+        int sfint = (int)eeprom_write_flags.flag_sf;
+        if (sfint == 0){
+            sfbool = false;
+            }
+        else{
+            sfbool = true;
+            }
+        
+    bool mbaddrbool;
+        int mbaddrint = (int)eeprom_write_flags.flag_mbaddr;
+        if (mbaddrint == 0){
+            mbaddrbool = false;
+            }
+        else{
+            mbaddrbool = true;
+            }
+        
+    bool serialbool;
+        int serialint = (int)eeprom_write_flags.flag_serial;
+        if (serialint == 0){
+            serialbool = false;
+            }
+        else{
+            serialbool = true;
+            }
+        
+    bool goodrssibool;
+        int goodrssiint = (int)eeprom_write_flags.flag_good_rssi;
+        if (goodrssiint == 0){
+            goodrssibool = false;
+            }
+        else{
+            goodrssibool = true;
+            }
+        
+    bool resvbool;
+        int resvint = (int)eeprom_write_flags.resv;
+        if (resvint == 0){
+            resvbool = false;
+            }
+        else{
+            resvbool = true;
+            }
+        
+    if(bootloadbool){
         DATAEE_WriteByte_Platform(REQBootLoad, 0xAA);
         eeprom_write_flags.flag_bootload = 0;
     }
-    else if(eeprom_write_flags.flag_appkey){
+    
+    else if(appkeybool){
         for(uint8_t i = 0; i < sizeof(aes_key); i++){
             DATAEE_WriteByte_Platform((AESkey0 + i),aes_key[i]);
         }
         eeprom_write_flags.flag_appkey = 0;
     }
-    else if(eeprom_write_flags.flag_netkey){
+    else if(netkeybool){
         for(uint8_t i = 0; i < sizeof(net_key); i++){
             DATAEE_WriteByte_Platform((NETkey0 + i),net_key[i]);
         }
         eeprom_write_flags.flag_netkey = 0;
     }
-    else if(eeprom_write_flags.flag_netid){
+    else if(netidbool){
         DATAEE_WriteByte_Platform(networkID,(pan_id >> 8) & 0xFF);
         DATAEE_WriteByte_Platform(networkID_LSB,pan_id & 0xFF);
         eeprom_write_flags.flag_netid = 0;
     }
-    else if(eeprom_write_flags.flag_sink){
+    else if(sinkbool){
         DATAEE_WriteByte_Platform(sinkAddrEE0, sinkAddr0);
         DATAEE_WriteByte_Platform(sinkAddrEE0, sinkAddr1);
         eeprom_write_flags.flag_sink = 0;
     }
-    else if(eeprom_write_flags.flag_radio_ch){
+    else if(radiochbool){
         DATAEE_WriteByte_Platform(radioChannel, channel);
         eeprom_write_flags.flag_radio_ch = 0;
     }
-    else if(eeprom_write_flags.flag_tx_power){
+    else if(txpowerbool){
         DATAEE_WriteByte_Platform(txPowerSetting, TXPower);
         eeprom_write_flags.flag_tx_power = 0;
     }
-    else if(eeprom_write_flags.flag_rssi){
+    else if(rssibool){
         DATAEE_WriteByte_Platform(RSSITargetSetting, RSSITarget);
         eeprom_write_flags.flag_rssi = 0;
     }
-    else if(eeprom_write_flags.flag_uart_baud){
+    else if(uartbaudbool){
         DATAEE_WriteByte_Platform(UARTBaud, uart_baud_rate);
         eeprom_write_flags.flag_uart_baud = 0;
     }
-    else if(eeprom_write_flags.flag_uart_parity){
+    else if(uartparbool){
         DATAEE_WriteByte_Platform(UARTParity, uart_parity);
         eeprom_write_flags.flag_uart_parity = 0;
     }
-    else if(eeprom_write_flags.flag_sf){
+    else if(sfbool){
         DATAEE_WriteByte_Platform(SF, current_sf);
         eeprom_write_flags.flag_sf = 0;
     }
-    else if(eeprom_write_flags.flag_mbaddr){
+    else if(mbaddrbool){
 #ifdef MBRTU
         DATAEE_WriteByte_Platform(MBADDR, mb_rtu_addr);
 #endif
         eeprom_write_flags.flag_mbaddr = 0;
     }
-    else if(eeprom_write_flags.flag_serial){
+    else if(serialbool){
         eeprom_write_flags.flag_serial = 0;
     }
-    else if(eeprom_write_flags.flag_good_rssi){
+    else if(goodrssibool){
         DATAEE_WriteByte_Platform(RSSI_GOOD, PHY_Get_Packet_Rssi_Threshold());
         eeprom_write_flags.flag_good_rssi = 0;
     }
-    else if(eeprom_write_flags.resv){
+    else if(resvbool){
         eeprom_write_flags.resv = 0;
     }
     else{
@@ -180,7 +319,8 @@ uint8_t set_eeprom_sync(uint8_t flag_type){
             eeprom_write_flags.flag_good_rssi = 1;
             break;
         default:
-            return ILLEGALPARAMETER;            
+            continue;
+            //return ILLEGALPARAMETER;            
     }
     eeprom_write_flags.flag_master = 1;
     return E_OK;
